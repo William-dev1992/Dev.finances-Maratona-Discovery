@@ -1,11 +1,11 @@
 const Modal = {
-  open(){
+  open() {
     document
       .querySelector('.modal-overlay')
       .classList
       .add('active')
   },
-  close(){
+  close() {
     document
       .querySelector('.modal-overlay')
       .classList
@@ -13,10 +13,30 @@ const Modal = {
   }
 }
 
+const ModalExep = {
+  open() {
+    document
+      .querySelector('.modal-overlay-expecifics')
+      .classList
+      .add('active')
+  },
+  close() {
+    document
+      .querySelector('.modal-overlay-expecifics')
+      .classList
+      .remove('active')
+  }
+}
+
 const DOM = {
   transactionsConatiner: document.querySelector('#data-table tbody'),
-  addTransaction(transaction, index){
+  addTransaction(transaction, index) {
     const tr = document.createElement('tr')
+    tr.onclick = () => {
+      ModalExep.open()
+
+      DOM.transactionsExpecifics(transaction, index)
+    }
     tr.innerHTML = DOM.innerHTMLTransaction(transaction, index)
     tr.dataset.index = index
 
@@ -32,45 +52,78 @@ const DOM = {
       <td class="description">${transaction.description}</td>
       <td class="${CSSclass}">${amount}</td>
       <td class="date">${transaction.date}</td>
-      <td>
-        <img onclick="Transaction.remove(${index})" src="./assets/minus.svg" alt="Remover Transação">
-      </td>
     `
 
     return html
   },
 
-  updateBalance(){
+  transactionsExpecifics(transaction,index) {
+    const container = document.querySelector('.modal-expecifics')
+
+    const html = `
+      <h2>Informações da transação</h2>
+      <small class="help">Descrição</small>
+      <div class="description">
+        ${transaction.description}
+      </div>
+
+      <small class="help">Valor da transação</small>
+      <div class="amount">
+        ${transaction.amount}
+      </div>
+
+      <small class="help">Opção de pagamento</small>
+      <div class="paymentOP">
+        ${transaction.paymentOP}
+      </div>
+
+      <small class="help">Data da transação</small>
+      <div class="date">
+        ${transaction.date}
+      </div>
+
+      <div class="input-group actions">
+        <a href="#" onclick="Transaction.remove(${index}), ModalExep.close()" class="button cancel">Deletar</a>
+        <button onclick="ModalExep.close()" >Voltar</button>
+      </div>
+    `
+
+    container.innerHTML = html
+
+    return html
+  },
+
+  updateBalance() {
     document.querySelector('#incomesDisplay').innerHTML = Utils.formatCurrency(Transaction.incomes())
     document.querySelector('#expensesDisplay').innerHTML = Utils.formatCurrency(Transaction.expenses())
     document.querySelector('#totalDisplay').innerHTML = Utils.formatCurrency(Transaction.total())
   },
 
-  clearTransactions(){
+  clearTransactions() {
     DOM.transactionsConatiner.innerHTML = ""
   },
 }
 
 const Utils = {
-  formatAmount(value){
+  formatAmount(value) {
     value = Number(value) * 100
     return Math.round(value)
   },
 
-  formatDate(date){
+  formatDate(date) {
     const splittedDate = date.split("-")
     return `${splittedDate[2]}/${splittedDate[1]}/${splittedDate[0]}`
   },
 
-  formatCurrency(value){
+  formatCurrency(value) {
     const signal = Number(value) < 0 ? "-" : ""
 
-    value = String(value).replace(/\D/g,"")
+    value = String(value).replace(/\D/g, "")
 
     value = Number(value) / 100
 
     value = value.toLocaleString("pt-BR", {
-      style: "currency" ,
+      style: "currency",
       currency: "BRL"
     })
 
@@ -81,28 +134,31 @@ const Utils = {
 const Form = {
   description: document.querySelector('input#description'),
   amount: document.querySelector('input#amount'),
+  paymentOP: document.querySelector('input#paymentOP'),
   date: document.querySelector('input#date'),
 
-  getValue(){
-    return{
+  getValue() {
+    return {
       description: Form.description.value,
       amount: Form.amount.value,
+      paymentOP: Form.paymentOP.value,
       date: Form.date.value,
     }
   },
-  
-  validateFields(){
-    const {description, amount, date} = Form.getValue()
 
-    if(description.trim() === "" ||
+  validateFields() {
+    const { description, amount, paymentOP, date } = Form.getValue()
+
+    if (description.trim() === "" ||
       amount.trim() === "" ||
-      date.trim() === "" ) {
-        throw new Error("Por favor, preencha todos os campos")
-      }
+      date.trim() === ""  ||
+      paymentOP.trim() === "") {
+      throw new Error("Por favor, preencha todos os campos")
+    }
   },
 
-  formatValues(){
-    let {description, amount, date} = Form.getValue()
+  formatValues() {
+    let { description, amount, paymentOP, date } = Form.getValue()
 
     amount = Utils.formatAmount(amount);
 
@@ -111,18 +167,20 @@ const Form = {
     return {
       description,
       amount,
+      paymentOP,
       date
     }
 
   },
 
-  clearFields(){
+  clearFields() {
     Form.description.value = ""
     Form.amount.value = ""
+    Form.paymentOP.value = ""
     Form.date.value = ""
   },
 
-  submit(event){
+  submit(event) {
     event.preventDefault()
 
     try {
@@ -133,7 +191,7 @@ const Form = {
       Modal.close()
       App.reload()
     } catch (error) {
-      alert(error.message )
+      alert(error.message)
     }
 
 
@@ -153,11 +211,11 @@ const Storage = {
 const Transaction = {
   all: Storage.get(),
 
-  add(transaction){
+  add(transaction) {
     Transaction.all.push(transaction)
   },
 
-  remove(index){
+  remove(index) {
     Transaction.all.splice(index, 1)
 
     App.reload()
@@ -167,7 +225,7 @@ const Transaction = {
     let income = 0;
 
     Transaction.all.forEach((transaction) => {
-      if( transaction.amount > 0){
+      if (transaction.amount > 0) {
         income += transaction.amount;
       }
     })
@@ -178,7 +236,7 @@ const Transaction = {
     let expense = 0;
 
     Transaction.all.forEach((transaction) => {
-      if( transaction.amount < 0){
+      if (transaction.amount < 0) {
         expense += transaction.amount;
       }
     })
@@ -186,24 +244,24 @@ const Transaction = {
     return expense
 
   },
-  total(){
+  total() {
     return Transaction.incomes() + Transaction.expenses()
 
   }
 }
 
 const App = {
-  init(){
+  init() {
     Transaction.all.forEach((transaction, index) => {
-      DOM.addTransaction(transaction,index);
+      DOM.addTransaction(transaction, index);
     })
-    
+
     DOM.updateBalance()
 
     Storage.set(Transaction.all)
 
   },
-  reload(){
+  reload() {
     DOM.clearTransactions()
     App.init()
   },

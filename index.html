@@ -6,7 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="./style.css">
   <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,400;0,700;1,100;1,400;1,700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,400;0,700;1,100;1,400;1,700&display=swap"
+    rel="stylesheet">
   <script src="./script.js" defer></script>
   <title>dev.finace$</title>
 </head>
@@ -22,7 +24,7 @@
 
       <div class="card">
         <h3>
-          <span>Entradas</span> 
+          <span>Entradas</span>
           <img src="./assets/income.svg" alt="Imagem de entradas">
         </h3>
         <p id="incomesDisplay">R$ 0,00</p>
@@ -30,7 +32,7 @@
 
       <div class="card">
         <h3>
-          <span>Saídas</span> 
+          <span>Saídas</span>
           <img src="./assets/expense.svg" alt="Imagem de entradas">
         </h3>
         <p id="expensesDisplay">R$ 0,00</p>
@@ -38,7 +40,7 @@
 
       <div class="card total">
         <h3>
-          <span>Total</span> 
+          <span>Total</span>
           <img src="./assets/total.svg" alt="Imagem de entradas">
         </h3>
         <p id="totalDisplay">R$ 0,00</p>
@@ -56,7 +58,6 @@
             <th>Descrição</th>
             <th>Valor</th>
             <th>Data</th>
-            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -65,15 +66,25 @@
     </section>
   </main>
 
+  <div class="modal-overlay-expecifics">
+    <div class="modal-expecifics">
+    </div>
+  </div>
+
   <div class="modal-overlay">
     <div class="modal">
-      <div class="form">
+      <div id="form">
         <h2>Nova Tansação</h2>
         <form action="" onsubmit="Form.submit(event)">
 
           <div class="input-group">
             <label class="sr-only" for="description">Descrição</label>
             <input type="text" id="description" name="description" placeholder="Descrição">
+          </div>
+
+          <div class="input-group">
+            <label class="sr-only" for="amount">Forma de pagamento</label>
+            <input type="text" id="paymentOP" name="paymentOP" placeholder="Forma de pagamento">
           </div>
 
           <div class="input-group">
@@ -96,7 +107,7 @@
     </div>
   </div>
 
-  <footer >
+  <footer>
     <p>dev.finance$</p>
   </footer>
 </body>
